@@ -1,4 +1,7 @@
 #include "kalman_filter.h"
+#include <cassert>
+#include <iostream>
+
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -26,7 +29,9 @@ void KalmanFilter::Predict() {
       * predict the state
     */
     x_ = F_ * x_;
-    P_ = F_ * P_ * F_.transpose() + Q_;
+    MatrixXd Ft = F_.transpose();
+    P_ = F_ * P_ * Ft + Q_;
+
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
@@ -49,15 +54,28 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     TODO:
       * update the state by using Extended Kalman Filter equations
     */
-    double px = x_(0);
-    double py = x_(1);
-    double vx = x_(2);
-    double vy = x_(3);
-    double c1 = sqrt(px*px + py*py);
+    float px = x_(0);
+    float py = x_(1);
+    float vx = x_(2);
+    float vy = x_(3);
+
     VectorXd hx(3);
-    hx << c1, atan2(py, px), (px*vx + py*vy) / c1;
+    float h1 = sqrt(px*px + py*py);
+    float h2 = atan2(py, px);
+    float h3 = (px*vx + py*vy) / h1;
+    hx << h1, h2, h3;
 
     VectorXd y = z - hx;
+
+    // normalizing the angle
+    while(y(1) > M_PI)
+        y(1) -= 2 * M_PI;
+    while(y(1) < -M_PI)
+        y(1) += 2 * M_PI;
+
+    std::cout << "theta: " << y(1) << std::endl;
+    assert(y(1) >= -M_PI && y(1) < M_PI);
+
     MatrixXd Ht = H_.transpose();
     MatrixXd S = H_ * P_ * Ht + R_;
     MatrixXd Si = S.inverse();
