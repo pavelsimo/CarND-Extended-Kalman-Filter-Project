@@ -12,8 +12,6 @@ My project includes the following files:
 * ```FusionEKF.cpp``` class for running the kalman filter
 * ```tools.cpp``` utility functions (e.g. CalculateRMSE)
 
-![EKF Project][img1]
-
 ## Dependencies
 
 * [Udacity Term 2 Simulator](https://github.com/udacity/self-driving-car-sim/releases)
@@ -37,3 +35,4 @@ My project includes the following files:
    * On windows, you may need to run: `cmake .. -G "Unix Makefiles" && make`
 4. Run it: `./ExtendedKF `
 
+![EKF Project][img1]
